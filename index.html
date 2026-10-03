@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free AI Business Audit</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f9fafb; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; border: 1px solid #f3f4f6; }
+        .header { text-align: center; margin-bottom: 1.5rem; }
+        .header h1 { font-size: 1.5rem; font-weight: bold; color: #111827; margin: 0 0 0.25rem 0; }
+        .header p { font-size: 0.875rem; color: #6b7280; margin: 0; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; box-sizing: border-box; outline: none; font-size: 1rem; }
+        input:focus { border-color: #2563eb; ring: 2px solid #2563eb; }
+        button { width: 100%; background-color: #2563eb; color: white; font-weight: 500; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+        button:hover { background-color: #1d4ed8; }
+        button:disabled { background-color: #9ca3af; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header">
+      <h1>Get Your Free AI Audit</h1>
+      <p>Discover 3 operational or marketing bottlenecks instantly.</p>
+    </div>
+
+    <form id="auditForm">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="name" required placeholder="Jane Doe">
+      </div>
+      
+      <div class="form-group">
+        <label>Work Email</label>
+        <input type="email" id="email" required placeholder="jane@company.com">
+      </div>
+
+      <div class="form-group">
+        <label>Business Name</label>
+        <input type="text" id="businessName" required placeholder="Acme Inc">
+      </div>
+
+      <div class="form-group">
+        <label>Website URL</label>
+        <input type="url" id="websiteUrl" required placeholder="https://example.com">
+      </div>
+
+      <button type="submit" id="submitBtn">Generate Free AI Audit</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('auditForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = "Analyzing your site (~30s)...";
+      btn.disabled = true;
+
+      const payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        businessName: document.getElementById('businessName').value,
+        websiteUrl: document.getElementById('websiteUrl').value
+      };
+
+      try {
+        const response = await fetch('YOUR_N8N_PRODUCTION_WEBHOOK_URL', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          alert('Success! Your custom audit report is being generated and sent to your email.');
+          document.getElementById('auditForm').reset();
+        } else {
+          alert('Something went wrong. Please try again.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error. Please check your connection.');
+      } finally {
+        btn.innerText = "Generate Free AI Audit";
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

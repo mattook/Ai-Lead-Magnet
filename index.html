@@ -461,7 +461,7 @@
     btn.innerText = 'Scanning website & generating report...';
 
     try {
-      const response = await fetch('YOUR_N8N_WEBHOOK_URL', {
+      const response = await fetch('http://localhost:5678/webhook-test/d6d6d9b8-040b-496a-be18-38bdb94bb6ad', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

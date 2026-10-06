@@ -363,3 +363,173 @@
 <div class="container">
 
   <!-- ================= LANDING PAGE VIEW ================= -->
+   <div id="landing-view">
+    <h1 class="hero-title">See what your business is <i>missing.</i></h1>
+    <p class="subtitle">
+      The AI Operations X-Ray reads your live site, takes 3 intake answers, and returns a ranked plan of the 3 highest-leverage AI systems to build, what each is worth, and where to start.
+    </p>
+
+    <!-- 3 Core Features -->
+    <div class="grid-3">
+      <div class="card-feature">
+        <div class="number">01</div>
+        <h3>3 ranked automations</h3>
+        <p>Specific to your site, your stack, and the workflow burning time. Not a template.</p>
+      </div>
+      <div class="card-feature">
+        <div class="number">02</div>
+        <h3>Real dollar math</h3>
+        <p>Each automation comes with a value estimate, run cost, build tier, and payback timeline.</p>
+      </div>
+      <div class="card-feature">
+        <div class="number">03</div>
+        <h3>First-month action plan</h3>
+        <p>5 things to do before any build starts. Practical prep work your team can do alone.</p>
+      </div>
+    </div>
+
+    <!-- What Makes This Different -->
+    <div class="card-differentiator">
+      <div class="diff-title">What makes this different</div>
+      <ul class="diff-list">
+        <li><span>&rarr;</span> <b>It reads your real site.</b> Crawls your homepage, services, case studies, and tech tells.</li>
+        <li><span>&rarr;</span> <b>Non-obvious insights.</b> Uncovers second-order leverage where time is actually lost.</li>
+        <li><span>&rarr;</span> <b>Honest math, not vendor math.</b> Concrete mechanisms and realistic return estimates.</li>
+        <li><span>&rarr;</span> <b>Delivered straight to your inbox.</b> Clean briefing ready for action.</li>
+      </ul>
+    </div>
+
+    <!-- Main Hero CTA -->
+    <button class="cta-btn" onclick="startScan()">Run the X-Ray &rarr;</button>
+    <div class="trust-bullets">No credit card &bull; No call required &bull; Email gated only at the end</div>
+  </div>
+
+
+  <!-- ================= MULTI-STEP SCANNER VIEW ================= -->
+  <div id="scanner-view">
+    <div class="form-card">
+
+      <!-- STEP 1: DOMAIN INPUT -->
+      <div class="step-content active" id="step-1">
+        <h2>What domain should we scan?</h2>
+        <p class="subtitle" style="font-size: 14px; margin-bottom: 20px;">We'll crawl your site to extract services and tech stack hints.</p>
+        
+        <label for="domain">Company Domain</label>
+        <input type="text" id="domain" placeholder="yourcompany.com" required />
+
+        <button class="primary-btn" onclick="goToStep(2)">Next &rarr;</button>
+      </div>
+
+      <!-- STEP 2: THE 3 QUESTIONS -->
+      <div class="step-content" id="step-2">
+        <div class="step-indicator">STEP 2 / 3</div>
+        <h2>The 3 questions.</h2>
+        <p class="subtitle" style="font-size: 14px; margin-bottom: 20px;">The more specific you are, the sharper the report.</p>
+
+        <!-- Q1: Team Size -->
+        <label>Team size <span class="sublabel">Q1</span></label>
+        <div class="btn-group" id="q1-group">
+          <div class="btn-option" onclick="selectOption('q1', '1-5', this)">1-5</div>
+          <div class="btn-option" onclick="selectOption('q1', '6-15', this)">6-15</div>
+          <div class="btn-option" onclick="selectOption('q1', '16-50', this)">16-50</div>
+          <div class="btn-option" onclick="selectOption('q1', '51-200', this)">51-200</div>
+          <div class="btn-option" onclick="selectOption('q1', '200+', this)">200+</div>
+        </div>
+
+        <!-- Q2: Workflow Drain -->
+        <label for="q2">The one workflow that burns the most time right now <span class="sublabel">Q2</span></label>
+        <textarea id="q2" rows="3" placeholder="e.g., We send a weekly client report that takes hours to set up from Stripe."></textarea>
+
+        <!-- Q3: Financial Cost -->
+        <label>What does it cost you when it breaks or slips? <span class="sublabel">Q3</span></label>
+        <div class="btn-group" id="q3-group">
+          <div class="btn-option" onclick="selectOption('q3', 'Under $1K / month', this)">Under $1K / month</div>
+          <div class="btn-option" onclick="selectOption('q3', '$1K - $5K / month', this)">$1K - $5K / month</div>
+          <div class="btn-option" onclick="selectOption('q3', '$5K+ / month', this)">$5K+ / month</div>
+        </div>
+
+        <button class="primary-btn" onclick="goToStep(3)">Next &rarr;</button>
+      </div>
+
+      <!-- STEP 3: LEAD CAPTURE -->
+      <div class="step-content" id="step-3">
+        <div class="step-indicator">STEP 3 / 3</div>
+        <h2>Where should we send your report?</h2>
+        <p class="subtitle" style="font-size: 14px; margin-bottom: 20px;">We'll email it and generate it instantly.</p>
+
+        <label for="name">Your name</label>
+        <input type="text" id="name" placeholder="Your name" required />
+
+        <label for="email">Work Email</label>
+        <input type="email" id="email" placeholder="you@company.com" required />
+
+        <button class="primary-btn" id="submit-btn" onclick="submitScan()">Generate my report</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let formData = { domain: '', q1_team_size: '', q2_time_drain: '', q3_cost_impact: '', name: '', email: '' };
+
+  function startScan() {
+    document.getElementById('landing-view').style.display = 'none';
+    document.getElementById('scanner-view').style.display = 'block';
+  }
+
+  function selectOption(field, value, el) {
+    if (field === 'q1') formData.q1_team_size = value;
+    if (field === 'q3') formData.q3_cost_impact = value;
+
+    const parent = el.parentElement;
+    parent.querySelectorAll('.btn-option').forEach(btn => btn.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function goToStep(stepNum) {
+    if (stepNum === 2) {
+      const dom = document.getElementById('domain').value.trim();
+      if (!dom) return alert('Please enter your company domain');
+      formData.domain = dom;
+    }
+
+    document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+    document.getElementById(`step-${stepNum}`).classList.add('active');
+  }
+
+  async function submitScan() {
+    formData.q2_time_drain = document.getElementById('q2').value.trim();
+    formData.name = document.getElementById('name').value.trim();
+    formData.email = document.getElementById('email').value.trim();
+
+    if (!formData.name || !formData.email) return alert('Please complete your name and email');
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerText = 'Scanning website & generating report...';
+
+    try {
+      const response = await fetch('YOUR_N8N_WEBHOOK_URL', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        alert('Scan Complete! Check your inbox for the custom audit report.');
+      } else {
+        alert('Something went wrong submitting your request.');
+        btn.disabled = false;
+        btn.innerText = 'Generate my report';
+      }
+    } catch (err) {
+      alert('Network error connecting to automation server.');
+      btn.disabled = false;
+      btn.innerText = 'Generate my report';
+    }
+  }
+</script>
+</body>
+</html>

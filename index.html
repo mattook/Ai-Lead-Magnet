@@ -37,13 +37,12 @@
     .wrapper {
       max-width: 760px;
       margin: 0 auto;
-      padding: 80px 24px 120px 24px;
+      padding: 60px 24px 120px 24px;
     }
 
-    /* --- HERO & LANDING SECTION --- */
     .hero-section {
       text-align: center;
-      padding-bottom: 60px;
+      padding-bottom: 40px;
     }
 
     h1.hero-title {
@@ -67,7 +66,6 @@
       font-weight: 400;
     }
 
-    /* --- 3 FEATURE CARDS (SCROLLABLE GRID) --- */
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -105,7 +103,6 @@
       line-height: 1.5;
     }
 
-    /* --- DIFFERENTIATOR BOX --- */
     .card-differentiator {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -143,10 +140,9 @@
     .diff-list li:last-child { margin-bottom: 0; }
     .diff-list span.arrow { color: var(--text-light); font-weight: bold; }
 
-    /* --- MAIN HERO CTA --- */
     .cta-container {
       text-align: center;
-      padding: 20px 0 80px 0;
+      padding: 20px 0 40px 0;
     }
 
     .cta-btn {
@@ -176,7 +172,6 @@
       margin-top: 20px;
     }
 
-    /* --- INTAKE FLOW SECTIONS --- */
     #scanner-flow {
       display: none;
     }
@@ -200,7 +195,7 @@
     }
 
     .step-section h2 {
-      font-size: 40px;
+      font-size: 38px;
       font-family: var(--font-serif);
       font-weight: 400;
       letter-spacing: -0.02em;
@@ -214,7 +209,6 @@
       margin-bottom: 32px;
     }
 
-    /* --- FORM ELEMENTS --- */
     label {
       display: block;
       font-weight: 600;
@@ -247,6 +241,46 @@
       outline: none;
       border-color: var(--accent-green);
       background: #ffffff;
+    }
+
+    /* Checkbox Card Styling */
+    .checkbox-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--accent-light-green);
+      border: 1px solid #d0dfd7;
+      padding: 18px;
+      border-radius: 10px;
+      margin-top: 24px;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .checkbox-card:hover {
+      border-color: var(--accent-green);
+    }
+
+    .checkbox-card input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--accent-green);
+      cursor: pointer;
+    }
+
+    .checkbox-text-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--accent-green);
+      margin-bottom: 2px;
+    }
+
+    .checkbox-text-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
     }
 
     .btn-group {
@@ -297,13 +331,23 @@
     button.primary-btn:hover {
       background: var(--accent-green-hover);
     }
+
+    .alert-box {
+      display: none;
+      background: #fdf2f2;
+      border: 1px solid #f8b4b4;
+      color: #981b1b;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
 
 <div class="wrapper">
 
-  <!-- ================= LANDING PAGE SECTION ================= -->
   <div id="landing-view">
     <div class="hero-section">
       <h1 class="hero-title">See what your business is <i>missing.</i></h1>
@@ -311,7 +355,6 @@
         The AI Operations X-Ray reads your live site, takes 3 intake answers, and returns a ranked plan of the 3 highest-leverage AI systems to build, what each is worth, and where to start.
       </p>
 
-      <!-- 3 Ranked Features Row -->
       <div class="grid-3">
         <div class="card-feature">
           <div class="number">01</div>
@@ -330,7 +373,6 @@
         </div>
       </div>
 
-      <!-- What Makes This Different -->
       <div class="card-differentiator">
         <div class="diff-title">What makes this different</div>
         <ul class="diff-list">
@@ -341,7 +383,6 @@
         </ul>
       </div>
 
-      <!-- Hero CTA -->
       <div class="cta-container">
         <button class="cta-btn" onclick="startScan()">Run the X-Ray &rarr;</button>
         <div class="trust-bullets">No credit card &bull; No call required &bull; Email gated only at the end</div>
@@ -350,10 +391,9 @@
   </div>
 
 
-  <!-- ================= SCROLLABLE INTAKE FLOW ================= -->
   <div id="scanner-flow">
 
-    <!-- STEP 1: DOMAIN INPUT -->
+    <!-- STEP 1: DOMAIN & WEBSITE AUDIT OPTION -->
     <div class="step-section" id="step-1">
       <div class="step-indicator">Step 1 / 3</div>
       <h2>What domain should we scan?</h2>
@@ -362,7 +402,17 @@
       <label for="domain">Company Domain</label>
       <input type="text" id="domain" placeholder="yourcompany.com" required />
 
+      <!-- NEW YES/NO CHECKBOX FOR WEBSITE IMPROVEMENT AUDIT -->
+      <label class="checkbox-card">
+        <input type="checkbox" id="website-audit-toggle" checked />
+        <div>
+          <div class="checkbox-text-title">Include a free website conversion & design audit?</div>
+          <div class="checkbox-text-desc">If checked, our second AI design engine will analyze your landing page UI/UX and include 3 actionable conversion improvements in your final report.</div>
+        </div>
+      </label>
+
       <button class="primary-btn" onclick="scrollToStep(2)">Next Step &rarr;</button>
+      <div class="alert-box" id="alert-step-1"></div>
     </div>
 
     <!-- STEP 2: THE 3 QUESTIONS -->
@@ -371,7 +421,6 @@
       <h2>The 3 questions.</h2>
       <p class="step-subtitle">The more specific you are, the sharper the report.</p>
 
-      <!-- Q1: Team Size -->
       <label>Team size <span class="sublabel">Q1</span></label>
       <div class="btn-group" id="q1-group">
         <div class="btn-option" onclick="selectOption('q1', '1-5', this)">1-5</div>
@@ -381,11 +430,9 @@
         <div class="btn-option" onclick="selectOption('q1', '200+', this)">200+</div>
       </div>
 
-      <!-- Q2: Time Drain -->
       <label for="q2">The one workflow that burns the most time right now <span class="sublabel">Q2 &bull; BE SPECIFIC</span></label>
-      <textarea id="q2" rows="3" placeholder="e.g., We send a weekly client report that takes hours to set up from Stripe."></textarea>
+      <textarea id="q2" rows="3" placeholder="e.g., We manually summarize weekly client reports and copy values from Stripe into Google Sheets."></textarea>
 
-      <!-- Q3: Cost Impact -->
       <label>What does it cost you when it breaks or slips? <span class="sublabel">Q3 &bull; MEASURABLE IMPACT</span></label>
       <div class="btn-group" id="q3-group">
         <div class="btn-option" onclick="selectOption('q3', 'Under $1K / month', this)">Under $1K / month</div>
@@ -394,13 +441,14 @@
       </div>
 
       <button class="primary-btn" onclick="scrollToStep(3)">Next Step &rarr;</button>
+      <div class="alert-box" id="alert-step-2"></div>
     </div>
 
     <!-- STEP 3: LEAD CAPTURE -->
     <div class="step-section" id="step-3" style="display: none;">
       <div class="step-indicator">Step 3 / 3</div>
       <h2>Where should we send your report?</h2>
-      <p class="step-subtitle">We'll email it and generate it instantly.</p>
+      <p class="step-subtitle">We'll generate your briefing immediately and send a copy to your inbox.</p>
 
       <label for="name">Your name</label>
       <input type="text" id="name" placeholder="Your name" required />
@@ -409,6 +457,7 @@
       <input type="email" id="email" placeholder="you@company.com" required />
 
       <button class="primary-btn" id="submit-btn" onclick="submitScan()">Generate my report</button>
+      <div class="alert-box" id="alert-step-3"></div>
     </div>
 
   </div>
@@ -416,7 +465,29 @@
 </div>
 
 <script>
-  let formData = { domain: '', q1_team_size: '', q2_time_drain: '', q3_cost_impact: '', name: '', email: '' };
+  // CONFIGURATION: Replace with your production n8n webhook URL
+  const N8N_WEBHOOK_URL = 'https://n8n.yourdomain.com/webhook/ai-ops-xray';
+
+  let formData = {
+    domain: '',
+    include_website_audit: true,
+    q1_team_size: '',
+    q2_time_drain: '',
+    q3_cost_impact: '',
+    name: '',
+    email: ''
+  };
+
+  function showAlert(stepId, msg) {
+    const alertBox = document.getElementById(`alert-${stepId}`);
+    alertBox.innerText = msg;
+    alertBox.style.display = 'block';
+  }
+
+  function hideAlert(stepId) {
+    const alertBox = document.getElementById(`alert-${stepId}`);
+    alertBox.style.display = 'none';
+  }
 
   function startScan() {
     document.getElementById('landing-view').style.display = 'none';
@@ -435,13 +506,24 @@
 
   function scrollToStep(stepNum) {
     if (stepNum === 2) {
+      hideAlert('step-1');
       const dom = document.getElementById('domain').value.trim();
-      if (!dom) return alert('Please enter your company domain');
+      if (!dom) {
+        showAlert('step-1', 'Please enter your company domain name.');
+        return;
+      }
       formData.domain = dom;
+      formData.include_website_audit = document.getElementById('website-audit-toggle').checked;
       document.getElementById('step-2').style.display = 'block';
     }
 
     if (stepNum === 3) {
+      hideAlert('step-2');
+      formData.q2_time_drain = document.getElementById('q2').value.trim();
+      if (!formData.q1_team_size || !formData.q2_time_drain || !formData.q3_cost_impact) {
+        showAlert('step-2', 'Please complete all 3 questions before moving forward.');
+        return;
+      }
       document.getElementById('step-3').style.display = 'block';
     }
 
@@ -450,33 +532,40 @@
   }
 
   async function submitScan() {
-    formData.q2_time_drain = document.getElementById('q2').value.trim();
+    hideAlert('step-3');
     formData.name = document.getElementById('name').value.trim();
     formData.email = document.getElementById('email').value.trim();
 
-    if (!formData.name || !formData.email) return alert('Please complete your name and email');
+    if (!formData.name || !formData.email) {
+      showAlert('step-3', 'Please enter both your name and work email address.');
+      return;
+    }
 
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
-    btn.innerText = 'Scanning website & generating report...';
+    btn.style.opacity = '0.7';
+    btn.innerText = 'Scanning site & building report...';
 
     try {
-      const response = await fetch('http://localhost:5678/webhook-test/d6d6d9b8-040b-496a-be18-38bdb94bb6ad', {
+      const response = await fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(formData)
       });
 
       if (response.ok) {
-        alert('Scan Complete! Check your inbox for the custom audit report.');
+        btn.innerText = 'Report Generated!';
+        alert('Scan Complete! Check your inbox shortly for your full AI Operations Briefing.');
       } else {
-        alert('Something went wrong submitting your request.');
-        btn.disabled = false;
-        btn.innerText = 'Generate my report';
+        throw new Error(`Server returned HTTP ${response.status}`);
       }
     } catch (err) {
-      alert('Network error connecting to automation server.');
+      console.error('Submission error:', err);
+      showAlert('step-3', 'Failed to reach automation server. Please ensure CORS is enabled on n8n or check your webhook URL.');
       btn.disabled = false;
+      btn.style.opacity = '1';
       btn.innerText = 'Generate my report';
     }
   }

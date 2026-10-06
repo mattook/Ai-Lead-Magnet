@@ -342,11 +342,75 @@
       margin-top: 20px;
       font-size: 14px;
     }
+
+    /* Toast Notification Styles */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: var(--accent-green);
+      color: #ffffff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      font-size: 15px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease-out;
+      z-index: 9999;
+    }
+
+    .toast.success {
+      background: var(--accent-green);
+    }
+
+    .toast.success::before {
+      content: "✓";
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast.hide {
+      animation: slideOut 0.3s ease-out forwards;
+    }
+
+    @media (max-width: 640px) {
+      .toast {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <div class="wrapper">
+  <div id="toast" class="toast" style="display: none;"></div>
 
   <div id="landing-view">
     <div class="hero-section">
@@ -478,6 +542,9 @@
     email: ''
   };
 
+  let lastSubmissionTime = 0;
+  const SUBMISSION_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+
   function showAlert(stepId, msg) {
     const alertBox = document.getElementById(`alert-${stepId}`);
     alertBox.innerText = msg;
@@ -487,6 +554,20 @@
   function hideAlert(stepId) {
     const alertBox = document.getElementById(`alert-${stepId}`);
     alertBox.style.display = 'none';
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.remove('hide');
+    toast.style.display = 'flex';
+
+    setTimeout(() => {
+      toast.classList.add('hide');
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 300);
+    }, 4000);
   }
 
   function startScan() {
@@ -533,6 +614,16 @@
 
   async function submitScan() {
     hideAlert('step-3');
+    const now = Date.now();
+
+    // Check if user is trying to submit too soon
+    if (lastSubmissionTime && now - lastSubmissionTime < SUBMISSION_COOLDOWN_MS) {
+      const secondsRemaining = Math.ceil((SUBMISSION_COOLDOWN_MS - (now - lastSubmissionTime)) / 1000);
+      const minutesRemaining = Math.ceil(secondsRemaining / 60);
+      showToast(`Please wait ${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''} before requesting another report.`);
+      return;
+    }
+
     formData.name = document.getElementById('name').value.trim();
     formData.email = document.getElementById('email').value.trim();
 
@@ -556,8 +647,9 @@
       });
 
       if (response.ok) {
+        lastSubmissionTime = Date.now();
         btn.innerText = 'Report Generated!';
-        alert('Scan Complete! Check your inbox shortly for your full AI Operations Briefing.');
+        showToast('Report complete! Check your inbox for the Briefing.');
       } else {
         throw new Error(`Server returned HTTP ${response.status}`);
       }

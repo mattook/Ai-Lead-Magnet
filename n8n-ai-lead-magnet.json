@@ -1,0 +1,712 @@
+{
+  "name": "ai-lead-magnet",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d6d6d9b8-040b-496a-be18-38bdb94bb6ad",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        0
+      ],
+      "id": "50605b54-68d5-423f-973b-b8fa6c25fa02",
+      "name": "Webhook",
+      "webhookId": "d6d6d9b8-040b-496a-be18-38bdb94bb6ad"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "aYG0l9s7dbB7j3gbS",
+          "mode": "list",
+          "cachedResultName": "Website Content Crawler (apify/website-content-crawler)",
+          "cachedResultUrl": "https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input"
+        },
+        "customBody": "={\n  \"startUrls\": [\n    {\n      \"url\": \"https://{{ $json.body.domain.replace(/^https?:\\/\\//, '') }}\"\n    }\n  ],\n  \"maxCrawlPages\": 1,\n  \"maxCrawlDepth\": 0\n}",
+        "timeout": {},
+        "maxTotalChargeUsd": {}
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 2,
+      "position": [
+        272,
+        0
+      ],
+      "id": "e26210bd-0f7c-4502-a558-b89e5c903d02",
+      "name": "Run an Actor and get dataset",
+      "alwaysOutputData": true,
+      "credentials": {
+        "apifyApi": {
+          "id": "q93wOawz3IIZ47Yf",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"bottleneck_1\": {\n      \"type\": \"string\",\n      \"description\": \"The primary marketing, value proposition, or clarity bottleneck found on the site.\"\n    },\n    \"bottleneck_2\": {\n      \"type\": \"string\",\n      \"description\": \"The secondary conversion, trust, or social proof bottleneck found on the site.\"\n    },\n    \"bottleneck_3\": {\n      \"type\": \"string\",\n      \"description\": \"The tertiary call-to-action (CTA) or operational flow bottleneck found on the site.\"\n    }\n  },\n  \"required\": [\n    \"bottleneck_1\",\n    \"bottleneck_2\",\n    \"bottleneck_3\"\n  ],\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        848,
+        -96
+      ],
+      "id": "da1f0619-269e-41aa-85aa-cc3a5cc1ee87",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        -96
+      ],
+      "id": "a03accea-52ab-4fd2-b7ca-313cba2b31f6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "tETliUVCQ8wQOALQ",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appC5iTt7QYJEFtUE",
+          "mode": "list",
+          "cachedResultName": "ai-lead-magnet",
+          "cachedResultUrl": "https://airtable.com/appC5iTt7QYJEFtUE"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblzrjhnNmhXNAjmB",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appC5iTt7QYJEFtUE/tblzrjhnNmhXNAjmB"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Webhook').item.json.body.name }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Website URL": "={{ $('Run an Actor and get dataset').item.json.crawl.loadedUrl }}",
+            "Status": "Completed",
+            "Bottleneck 1": "={{ $('Webhook').item.json.body.include_website_audit ? $('Find 3 Website Improvements').item.json.output.bottleneck_1 : \"\" }}",
+            "Bottleneck 2": "={{ $('Webhook').item.json.body.include_website_audit ? $('Find 3 Website Improvements').item.json.output.bottleneck_2 : \"\" }}",
+            "Bottleneck 3": "={{ $('Webhook').item.json.body.include_website_audit ? $('Find 3 Website Improvements').item.json.output.bottleneck_3 : \"\" }}",
+            "Automation 1": "={{ $json.output.automations[0].description }}",
+            "Automation 2": "={{ $json.output.automations[1].description }}",
+            "Automation 3": "={{ $json.output.automations[2].description }}",
+            "Team Size": "={{ $('Webhook').item.json.body.q1_team_size }}",
+            "Domain": "={{ $('Webhook').item.json.body.domain }}",
+            "Time Drain": "={{ $('Webhook').item.json.body.q2_time_drain }}",
+            "Cost Impact": "={{ $('Webhook').item.json.body.q3_cost_impact }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Website URL",
+              "displayName": "Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pending",
+                  "value": "Pending"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                },
+                {
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "name": "New",
+                  "value": "New"
+                },
+                {
+                  "name": "Contacted",
+                  "value": "Contacted"
+                },
+                {
+                  "name": "Qualified",
+                  "value": "Qualified"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Bottleneck 1",
+              "displayName": "Bottleneck 1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Bottleneck 2",
+              "displayName": "Bottleneck 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Bottleneck 3",
+              "displayName": "Bottleneck 3",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Automation 1",
+              "displayName": "Automation 1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Automation 2",
+              "displayName": "Automation 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Automation 3",
+              "displayName": "Automation 3",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Team Size",
+              "displayName": "Team Size",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Time Drain",
+              "displayName": "Time Drain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cost Impact",
+              "displayName": "Cost Impact",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "ac0e9537-fc77-4cf0-b91a-fbed37835c6f",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "6hUT90uNOuYVX4cd",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 512,
+        "width": 2048,
+        "color": "#3A53BB"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "8fe9af79-4dab-4012-bfab-3d28e8ab4c6f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an elite, brutally honest B2B Growth Consultant and Conversion Rate Optimization (CRO) expert. Your job is to analyze the provided website text of a company and identify exactly 3 glaring operational, marketing, or conversion bottlenecks holding them back from scaling.\n\nRules for your analysis:\n1. Be specific. Do not give generic advice like \"improve your marketing.\" Reference actual concepts, missing elements, or structural gaps found in the provided text.\n2. Focus heavily on:\n   - Value Proposition clarity (Does a visitor know what they do in 3 seconds?)\n   - Call-to-Action (CTA) friction (Is it easy to buy or book?)\n   - Trust and Credibility gaps (Are there testimonials, case studies, or proof?)\n3. Keep each bottleneck concise, punchy, and actionable (2-3 sentences max per bottleneck).\n4. Tone should be professional, insightful, and authoritative—like a high-priced consultant giving a quick audit.\n\nPlease audit the following business based on their scraped website content:\n\nWebsite URL: {{ $('Webhook').item.json.body.domain }}\n\nScraped Website Content:\n{{ $json.text }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        688,
+        -240
+      ],
+      "id": "e1c26009-6117-41ed-8242-68f0b1ddd615",
+      "name": "Find 3 Website Improvements",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an elite AI Operations Architect. Analyze the scraped web text from {{ $('Webhook').item.json.body.domain }} along with:\n\nTeam Size: {{ $('Webhook').item.json.body.q1_team_size }}\n\nWorkflow Bottleneck: {{ $('Webhook').item.json.body.q2_time_drain }}\n\nCost Impact: {{ $('Webhook').item.json.body.q3_cost_impact }}\n\nReturn 3 ranked AI automations tailored specifically to solve their exact bottleneck.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        992,
+        0
+      ],
+      "id": "b363323e-53bc-4159-8a7f-cdc03d7e99f4",
+      "name": "Find 3 Automation Opportunities"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "114170ee-8977-405c-90d7-e2c90f8bc295",
+              "leftValue": "={{ $('Webhook').item.json.body.include_website_audit }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        512,
+        0
+      ],
+      "id": "a1c97792-e45f-43a4-a1dc-d49d20c07235",
+      "name": "If Website Audit"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        992,
+        144
+      ],
+      "id": "087b7154-79f2-4d10-9888-f54b58f4bb82",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "tETliUVCQ8wQOALQ",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"automations\": {\n      \"type\": \"array\",\n      \"description\": \"Exactly 3 ranked high-leverage AI systems to build for this specific business based on their site and intake answers.\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"rank\": { \"type\": \"integer\" },\n          \"title\": { \"type\": \"string\", \"description\": \"Short, punchy system name.\" },\n          \"description\": { \"type\": \"string\", \"description\": \"Specific description tailored to their site, tech stack, and time drain (2-3 sentences).\" },\n          \"estimated_value\": { \"type\": \"string\", \"description\": \"Dollar value saved or gained per year (e.g., '$14,000/yr').\" },\n          \"build_tier\": { \"type\": \"string\", \"description\": \"Complexity (e.g., 'Lightweight n8n workflow', 'Custom Webhook Integration').\" },\n          \"payback_timeline\": { \"type\": \"string\", \"description\": \"Time to return investment (e.g., '3 weeks').\" }\n        },\n        \"required\": [\"rank\", \"title\", \"description\", \"estimated_value\", \"build_tier\", \"payback_timeline\"],\n        \"additionalProperties\": false\n      },\n      \"minItems\": 3,\n      \"maxItems\": 3\n    }\n  },\n  \"required\": [\"automations\"],\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1136,
+        144
+      ],
+      "id": "465a337c-4a85-4e5b-809b-d17eedf9ed9f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "114170ee-8977-405c-90d7-e2c90f8bc295",
+              "leftValue": "={{ $('Webhook').item.json.body.include_website_audit }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1632,
+        0
+      ],
+      "id": "01d4795a-f6ea-481b-97be-bdb0b2e6e2e6",
+      "name": "If Website Audit 1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"Audit <onboarding@resend.dev>\",\n  \"to\": [\"{{ $('Webhook').item.json.body.email }}\"],\n  \"subject\": \"Your AI Operations X-Ray for {{ $('Webhook').item.json.body.domain }}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;\\\"><h2>Your AI Operations X-Ray Briefing</h2><p>Hi {{ $('Webhook').item.json.body.name }},</p><p>Here are your top 3 ranked AI automation opportunities based on your site (<strong>{{ $('Webhook').item.json.body.domain }}</strong>) and operational intake answers:</p><hr style=\\\"border:none; border-top:1px solid #eee; margin:20px 0;\\\" /><h3>Top 3 Ranked Automation Systems</h3><ol style=\\\"padding-left: 20px;\\\"><li style=\\\"margin-bottom: 20px;\\\"><strong>{{ $('Find 3 Automation Opportunities').item.json.output.automations[0].title }}</strong> (Est. Value: {{ $('Find 3 Automation Opportunities').item.json.output.automations[0].estimated_value }})<br/><span style=\\\"color:#555;\\\">{{ $('Find 3 Automation Opportunities').item.json.output.automations[0].description }}</span><br/><small style=\\\"color:#777;\\\">Build Tier: {{ $('Find 3 Automation Opportunities').item.json.output.automations[0].build_tier }} | Payback: {{ $('Find 3 Automation Opportunities').item.json.output.automations[0].payback_timeline }}</small></li><li style=\\\"margin-bottom: 20px;\\\"><strong>{{ $('Find 3 Automation Opportunities').item.json.output.automations[1].title }}</strong> (Est. Value: {{ $('Find 3 Automation Opportunities').item.json.output.automations[1].estimated_value }})<br/><span style=\\\"color:#555;\\\">{{ $('Find 3 Automation Opportunities').item.json.output.automations[1].description }}</span><br/><small style=\\\"color:#777;\\\">Build Tier: {{ $('Find 3 Automation Opportunities').item.json.output.automations[1].build_tier }} | Payback: {{ $('Find 3 Automation Opportunities').item.json.output.automations[1].payback_timeline }}</small></li><li style=\\\"margin-bottom: 20px;\\\"><strong>{{ $('Find 3 Automation Opportunities').item.json.output.automations[2].title }}</strong> (Est. Value: {{ $('Find 3 Automation Opportunities').item.json.output.automations[2].estimated_value }})<br/><span style=\\\"color:#555;\\\">{{ $('Find 3 Automation Opportunities').item.json.output.automations[2].description }}</span><br/><small style=\\\"color:#777;\\\">Build Tier: {{ $('Find 3 Automation Opportunities').item.json.output.automations[2].build_tier }} | Payback: {{ $('Find 3 Automation Opportunities').item.json.output.automations[2].payback_timeline }}</small></li></ol><hr style=\\\"border:none; border-top:1px solid #eee; margin:20px 0;\\\" /><h3>Bonus Website Improvement Suggestions</h3><ul><li><strong>{{ $('Find 3 Website Improvements').item.json.output.bottleneck_1 }}</strong></li><li><strong>{{ $('Find 3 Website Improvements').item.json.output.bottleneck_2 }}</strong></li><li><strong>{{ $('Find 3 Website Improvements').item.json.output.bottleneck_3 }}</strong></li></ul><p style=\\\"margin-top: 30px; font-size: 13px; color: #888;\\\">Generated automatically by your AI Operations Engine.</p></div>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1824,
+        -176
+      ],
+      "id": "2e7d3464-bedd-40f9-bd6d-6df4748d7bc0",
+      "name": "HTTP Request to Resend",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "x0obfogsGWxj9rzj",
+          "name": "Resend ai-lead-magnet key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"Audit <onboarding@resend.dev>\",\n  \"to\": [\"{{ $('Webhook').item.json.body.email }}\"],\n  \"subject\": \"Your AI Operations X-Ray for {{ $('Webhook').item.json.body.domain }}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;\\\"><h2>Your AI Operations X-Ray Briefing</h2><p>Hi {{ $('Webhook').item.json.body.name }},</p><p>Here are your top 3 ranked AI automation opportunities based on your site (<strong>{{ $('Webhook').item.json.body.domain }}</strong>) and operational intake answers:</p><hr style=\\\"border:none; border-top:1px solid #eee; margin:20px 0;\\\" /><h3>Top 3 Ranked Automation Systems</h3><ol style=\\\"padding-left: 20px;\\\"><li style=\\\"margin-bottom: 20px;\\\"><strong>{{ $('Find 3 Automation Opportunities').item.json.output.automations[0].title }}</strong> (Est. Value: {{ $('Find 3 Automation Opportunities').item.json.output.automations[0].estimated_value }})<br/><span style=\\\"color:#555;\\\">{{ $('Find 3 Automation Opportunities').item.json.output.automations[0].description }}</span><br/><small style=\\\"color:#777;\\\">Build Tier: {{ $('Find 3 Automation Opportunities').item.json.output.automations[0].build_tier }} | Payback: {{ $('Find 3 Automation Opportunities').item.json.output.automations[0].payback_timeline }}</small></li><li style=\\\"margin-bottom: 20px;\\\"><strong>{{ $('Find 3 Automation Opportunities').item.json.output.automations[1].title }}</strong> (Est. Value: {{ $('Find 3 Automation Opportunities').item.json.output.automations[1].estimated_value }})<br/><span style=\\\"color:#555;\\\">{{ $('Find 3 Automation Opportunities').item.json.output.automations[1].description }}</span><br/><small style=\\\"color:#777;\\\">Build Tier: {{ $('Find 3 Automation Opportunities').item.json.output.automations[1].build_tier }} | Payback: {{ $('Find 3 Automation Opportunities').item.json.output.automations[1].payback_timeline }}</small></li><li style=\\\"margin-bottom: 20px;\\\"><strong>{{ $('Find 3 Automation Opportunities').item.json.output.automations[2].title }}</strong> (Est. Value: {{ $('Find 3 Automation Opportunities').item.json.output.automations[2].estimated_value }})<br/><span style=\\\"color:#555;\\\">{{ $('Find 3 Automation Opportunities').item.json.output.automations[2].description }}</span><br/><small style=\\\"color:#777;\\\">Build Tier: {{ $('Find 3 Automation Opportunities').item.json.output.automations[2].build_tier }} | Payback: {{ $('Find 3 Automation Opportunities').item.json.output.automations[2].payback_timeline }}</small></li></ol><p style=\\\"margin-top: 30px; font-size: 13px; color: #888;\\\">Generated automatically by your AI Operations Engine.</p></div>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1840,
+        176
+      ],
+      "id": "c1363ad0-06c2-4c70-90f3-217573259ac6",
+      "name": "HTTP Request to Resend1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "x0obfogsGWxj9rzj",
+          "name": "Resend ai-lead-magnet key"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "If Website Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Find 3 Website Improvements",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Find 3 Website Improvements",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "If Website Audit 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find 3 Website Improvements": {
+      "main": [
+        [
+          {
+            "node": "Find 3 Automation Opportunities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Website Audit": {
+      "main": [
+        [
+          {
+            "node": "Find 3 Website Improvements",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find 3 Automation Opportunities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Find 3 Automation Opportunities",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Find 3 Automation Opportunities",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find 3 Automation Opportunities": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Website Audit 1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request to Resend",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request to Resend1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "90d7a2bc-5eb0-409e-b780-04861f50d906",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "47b6d37f1be1eb80a20f4c345c8853905346a0afde087b7fb05fe85005fc3a23"
+  },
+  "nodeGroups": [],
+  "id": "SazEqlvyNAgxH1rA",
+  "tags": []
+}
